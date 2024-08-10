@@ -1,0 +1,15 @@
+/* src/styles/Navbar.css */
+nav {
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
+ul {
+  list-style-type: none;
+  display: flex;
+  gap: 15px;
+}
+
+li {
+  display: inline;
+}
