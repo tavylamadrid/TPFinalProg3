@@ -1,0 +1,63 @@
+// src/pages/ServerList.jsx
+import React, { useEffect } from 'react';
+import useServers from '../hooks/useServers';
+import Notification from '../components/Notification';
+
+const ServerList = () => {
+  const { data: servers, error, fetchServers, createServer, deleteServer } = useServers();
+  const [notification, setNotification] = React.useState({ message: '', type: '' });
+
+  useEffect(() => {
+    fetchServers();
+  }, []);
+
+  const handleCreateServer = async () => {
+    const newServer = {
+      name: 'Nuevo Servidor',
+      description: 'Descripción del nuevo servidor',
+      owner: 1, // Cambia esto según el ID del propietario
+    };
+    try {
+      await createServer(newServer);
+      setNotification({ message: 'Servidor creado exitosamente', type: 'success' });
+    } catch (err) {
+      setNotification({ message: 'Error al crear el servidor', type: 'danger' });
+    }
+  };
+
+  const handleDeleteServer = async (id) => {
+    try {
+      await deleteServer(id);
+      setNotification({ message: 'Servidor eliminado exitosamente', type: 'success' });
+    } catch (err) {
+      setNotification({ message: 'Error al eliminar el servidor', type: 'danger' });
+    }
+  };
+
+  return (
+    <div>
+      <h1 className="title">Lista de Servidores</h1>
+      <Notification message={notification.message} type={notification.type} />
+      {error && <Notification message={error} type="danger" />}
+      <button className="button is-primary" onClick={handleCreateServer}>
+        Crear Servidor
+      </button>
+      <ul>
+        {Array.isArray(servers) && servers.length > 0 ? ( // Verifica que servers sea un array
+          servers.map((server) => (
+            <li key={server.id}>
+              {server.name}
+              <button className="button is-danger" onClick={() => handleDeleteServer(server.id)}>
+                Eliminar
+              </button>
+            </li>
+          ))
+        ) : (
+          <li>No hay servidores disponibles.</li> // Mensaje si no hay servidores
+        )}
+      </ul>
+    </div>
+  );
+};
+
+export default ServerList;

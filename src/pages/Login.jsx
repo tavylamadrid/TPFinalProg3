@@ -2,20 +2,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import { useAuth } from '../context/AuthContext'; // Importa el contexto
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth(); // Obtén la función de login del contexto
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const response = await api.post('/api-auth/', { username, password });
       localStorage.setItem('token', response.data.token);
-      login(response.data.token); // Llama a la función de login
+      login(response.data.token, response.data.userId); // Asegúrate de que el ID del usuario esté en la respuesta
       navigate('/profile');
     } catch (error) {
       console.error('Error de autenticación', error);

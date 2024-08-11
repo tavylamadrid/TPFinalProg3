@@ -1,0 +1,71 @@
+// src/hooks/useServers.js
+import { useState, useEffect } from 'react';
+import api from '../api'; // Asegúrate de que api.js esté configurado correctamente
+
+const useServers = () => {
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+
+  const fetchServers = async () => {
+    try {
+      const response = await api.get('/teamhub/servers/');
+      setData(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err.response ? err.response.data : 'Error de red');
+    }
+  };
+
+  const createServer = async (newServer) => {
+    try {
+      const response = await api.post('/teamhub/servers/', newServer);
+      setData((prevData) => [...prevData, response.data]);
+      setError(null);
+    } catch (err) {
+      setError(err.response ? err.response.data : 'Error de red');
+    }
+  };
+
+  const fetchServerById = async (id) => {
+    try {
+      const response = await api.get(`/teamhub/servers/${id}/`);
+      return response.data;
+    } catch (err) {
+      setError(err.response ? err.response.data : 'Error de red');
+    }
+  };
+
+  const updateServer = async (id, updatedServer) => {
+    try {
+      const response = await api.put(`/teamhub/servers/${id}/`, updatedServer);
+      setData((prevData) =>
+        prevData.map((server) => (server.id === id ? response.data : server))
+      );
+      setError(null);
+    } catch (err) {
+      setError(err.response ? err.response.data : 'Error de red');
+    }
+  };
+
+  const deleteServer = async (id) => {
+    try {
+      await api.delete(`/teamhub/servers/${id}/`);
+      setData((prevData) => prevData.filter((server) => server.id !== id));
+      setError(null);
+    } catch (err) {
+      setError(err.response ? err.response.data : 'Error de red');
+    }
+  };
+
+  return {
+    data,
+    error,
+    fetchServers,
+    createServer,
+    fetchServerById,
+    updateServer,
+    deleteServer,
+  };
+};
+
+export default useServers;

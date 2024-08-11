@@ -1,11 +1,12 @@
-
 // src/hooks/useApi.js
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import api from '../api';
 
 const useApi = (endpoint) => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Inicializa useNavigate
 
   const fetchData = async () => {
     try {
@@ -14,6 +15,9 @@ const useApi = (endpoint) => {
       setError(null);
     } catch (err) {
       setError(err.response ? err.response.data : 'Error de red');
+      if (err.response && err.response.status === 401) {
+        navigate('/login'); // Redirige a la página de inicio de sesión
+      }
     }
   };
 
@@ -24,6 +28,9 @@ const useApi = (endpoint) => {
       setError(null);
     } catch (err) {
       setError(err.response ? err.response.data : 'Error de red');
+      if (err.response && err.response.status === 401) {
+        navigate('/login'); // Redirige a la página de inicio de sesión
+      }
     }
   };
 
@@ -36,6 +43,9 @@ const useApi = (endpoint) => {
       setError(null);
     } catch (err) {
       setError(err.response ? err.response.data : 'Error de red');
+      if (err.response && err.response.status === 401) {
+        navigate('/login'); // Redirige a la página de inicio de sesión
+      }
     }
   };
 
@@ -46,6 +56,9 @@ const useApi = (endpoint) => {
       setError(null);
     } catch (err) {
       setError(err.response ? err.response.data : 'Error de red');
+      if (err.response && err.response.status === 401) {
+        navigate('/login'); // Redirige a la página de inicio de sesión
+      }
     }
   };
 

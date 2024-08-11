@@ -1,17 +1,16 @@
 // src/components/Navbar.jsx
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Importa el contexto
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth(); // Obtén el estado de autenticación
-
-  console.log('Estado de autenticación:', isAuthenticated);
- 
+  const { isAuthenticated, logout, UserId } = useAuth();
+ console.log('isAuthenticated:', isAuthenticated);
+ console.log('UserID:', UserId);
   const handleLogout = () => {
-    logout(); // Llama a la función de logout
-    navigate('/login'); // Redirigir a la página de inicio de sesión
+    logout();
+    navigate('/login');
   };
 
   return (
@@ -23,6 +22,8 @@ const Navbar = () => {
         <div className="navbar-start">
           <Link to="/" className="navbar-item">Inicio</Link>
           {isAuthenticated && <Link to="/profile" className="navbar-item">Perfil</Link>}
+          {isAuthenticated && <Link to="/channels" className="navbar-item">Canales</Link>}
+          {isAuthenticated && <Link to="/servers" className="navbar-item">Servidores</Link>} {/* Enlace a Servidores */}
         </div>
         <div className="navbar-end">
           {isAuthenticated ? (
