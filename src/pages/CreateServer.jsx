@@ -1,17 +1,38 @@
 // src/pages/CreateServer.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api'; // Asegúrate de que este archivo esté configurado correctamente
 import Notification from '../components/Notification';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
 
 const CreateServer = () => {
-  const { token, UserId } = useAuth(); // Obtén el token del contexto
+  const { token } = useAuth(); // Obtén el token del contexto
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [icon, setIcon] = useState('');
+  const [owner, setOwner] = useState(null); // Estado para el owner
   const [notification, setNotification] = useState({ message: '', type: '' });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await api.get('/users/profiles/profile_data/', {
+          headers: {
+            Authorization: `Token ${token}`, // Incluye el token en la cabecera
+          },
+        });
+        console.log('Perfil del usuario:', response.data); // Agrega este log
+        setOwner(response.data.user__id); // Establece el owner con el user__id
+        console.log('El owner es: ', owner);
+      } catch (error) {
+        setNotification({ message: 'Error al obtener los datos del perfil', type: 'danger' });
+        console.error('Error al obtener los datos del perfil', error);
+      }
+    };
+
+    fetchProfileData(); // Llama a la función para obtener los datos del perfil
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +41,7 @@ const CreateServer = () => {
         name,
         description,
         icon,
-        owner: UserId, //token ? 1 : 0, // Cambia esto para obtener el ID real del usuario autenticado
+        owner, // Usa el owner obtenido
         members: [], // Cambia esto según la lógica de tu aplicación
       };
       const response = await api.post('/teamhub/servers/', newServer);

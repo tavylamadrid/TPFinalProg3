@@ -7,7 +7,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout, UserId } = useAuth();
  console.log('isAuthenticated:', isAuthenticated);
- console.log('UserID:', UserId);
   const handleLogout = () => {
     logout();
     navigate('/login');

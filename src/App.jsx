@@ -6,7 +6,7 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
-import ChannelDetail from './pages/ChannelDetail';
+//import ChannelDetail from './pages/ChannelDetail';
 import ChannelList from './pages/ChannelList';
 import ServerList from './pages/ServerList'; // Importa la página de lista de servidores
 import ServerDetail from './pages/ServerDetail'; // Asegúrate de importar ServerDetail
