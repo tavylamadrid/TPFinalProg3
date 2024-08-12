@@ -3,42 +3,6 @@ Aplicación React que incluye la configuración de una API, rutas, componentes y
 
 ## Estructura del Proyecto
 
-| Carpeta/Archivo                    | Descripción                             |
-|------------------------------------|-----------------------------------------|
-| `src/`                             | Código fuente de la aplicación          |
-| ├── `components/`                  | Componentes reutilizables               |
-| │   ├── `Navbar.jsx`               | Barra de navegación                     |
-| │   ├── `PrivateRoute.jsx`         | Ruta privada                            |
-| │   ├── `Layout.jsx`               | Estructura básica                       |
-| │   └── `Notification.jsx`         | Componente de notificación              |
-| ├── `context/`                     | Contexto de autenticación               |
-| │   └── `AuthContext.jsx`          | Proveedor de estado de autenticación    |
-| ├── `styles/`                      | Estilos, cargar todos los CSS aquí      |
-| │   ├── `styles.css`               | Estilos globales                        |
-| │   └── `Notification.css`         | Estilos para notificaciones             |
-| ├── `services/`                    | Servicios                               |
-| │   └── `authService.jsx`          | Servicio de autenticación               |
-| ├── `pages/`                       | Páginas de la aplicación                |
-| │   ├── `Home.jsx`                 | Página de inicio                        |
-| │   ├── `Login.jsx`                | Página de inicio de sesión              |
-| │   ├── `Profile.jsx`              | Página de perfil                        |
-| │   ├── `NotFound.jsx`             | Página 404                              |
-| │   ├── `ChannelList.jsx`          | Lista de canales                        |
-| │   ├── `ChannelDetail.jsx`        | Detalles de un canal                    |
-| │   ├── `ServerDetail.jsx`         | Detalles de un servidor                 |
-| │   ├── `ServerList.jsx`           | Lista de servidores                     |
-| │   └── `CreateServer.jsx`         | Crear un nuevo servidor                 |
-| ├── `hooks/`                       | Hooks personalizados                    |
-| │   ├── `useApi.js`                | Hook para API                           |
-| │   ├── `useAuthStatus.js`         | Hook para estado de autenticación       |
-| │   ├── `useServers.js`            | Hook para servidores                    |
-| │   └── `useChannel.js`            | Hook para canales                       |
-| ├── `App.jsx`                      | Componente principal                    |
-| └── `index.jsx`                    | Punto de entrada                        |
-| `index.html`                       | Archivo HTML principal                  |
-| `package.json`                     | Configuración del proyecto              |
-| `vite.config.js`                   | Configuración de Vite                   |
-
 - **src/**: Código fuente de la aplicación
   - **components/**: Componentes reutilizables
     - `Navbar.jsx`: Barra de navegación
@@ -62,6 +26,7 @@ Aplicación React que incluye la configuración de una API, rutas, componentes y
     - `ServerDetail.jsx`: Detalles de un servidor
     - `ServerList.jsx`: Lista de servidores
     - `CreateServer.jsx`: Crear un nuevo servidor
+    - `CreateChannel.jsx`: Crear un nuevo servidor
   - **hooks/**: Hooks personalizados
     - `useApi.js`: Hook para API
     - `useAuthStatus.js`: Hook para estado de autenticación
@@ -69,6 +34,7 @@ Aplicación React que incluye la configuración de una API, rutas, componentes y
     - `useChannel.js`: Hook para canales
   - `App.jsx`: Componente principal
   - `index.jsx`: Punto de entrada
+  - `api.js`: Configura Axios para realizar solicitudes a una API
 - `index.html`: Archivo HTML principal
 - `package.json`: Configuración del proyecto
 - `vite.config.js`: Configuración de Vite
