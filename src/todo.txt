@@ -1,0 +1,985 @@
+// src/api.js
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'https://sandbox.academiadevelopers.com/',
+});
+
+// Interceptor para agregar el token JWT a las solicitudes
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token'); // se guarda el token en localStorage
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+export default api;
+// src/App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Profile from './pages/Profile';
+//import ChannelDetail from './pages/ChannelDetail';
+import ChannelList from './pages/ChannelList';
+import ServerList from './pages/ServerList'; // Importa la página de lista de servidores
+import ServerDetail from './pages/ServerDetail'; // Asegúrate de importar ServerDetail
+import PrivateRoute from './components/PrivateRoute';
+import NotFound from './pages/NotFound';
+import CreateServer from './pages/CreateServer'; // Importa el nuevo componente
+import CreateChannel from './pages/CreateChannel'; // Importa el nuevo componente
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/channels"
+              element={
+                <PrivateRoute>
+                  <ChannelList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/channels/create" // Nueva ruta para crear un canal
+              element={
+                <PrivateRoute>
+                  <CreateChannel />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/servers"
+              element={
+                <PrivateRoute>
+                  <ServerList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/servers/create" // Nueva ruta para crear un servidor
+              element={
+                <PrivateRoute>
+                  <CreateServer />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/servers/:id"
+              element={
+                <PrivateRoute>
+                  <ServerDetail />
+                </PrivateRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </AuthProvider>
+  );
+};
+
+export default App;
+// src/index.jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './styles/styles.css'; // Si tienes estilos globales
+// src/index.jsx o src/App.jsx
+import 'bulma/css/bulma.css';
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+// src/pages/ChannelList.jsx
+import React from 'react';
+import { Link } from 'react-router-dom'; // Importa Link para la navegación
+import useChannel from '../hooks/useChannel';
+import Notification from '../components/Notification';
+
+const ChannelList = () => {
+  const { channels, error, loading } = useChannel(); // Usa el hook personalizado
+
+  return (
+    <div>
+      <h1 className="title">Lista de Canales</h1>
+      {loading && <p>Cargando...</p>}
+      <Notification message={error} type="danger" />
+      <Link to="/channels/create" className="button is-primary">Crear Canal</Link> {/* Botón para crear un canal */}
+      <ul>
+        {channels.length > 0 ? (
+          channels.map((channel) => (
+            <li key={channel.id}>
+              <h2>{channel.name}</h2>
+              <p>{channel.description}</p>
+              <p>Creado el: {new Date(channel.created_at).toLocaleString()}</p>
+              <p>Actualizado el: {new Date(channel.updated_at).toLocaleString()}</p>
+            </li>
+          ))
+        ) : (
+          <li>No hay canales disponibles.</li>
+        )}
+      </ul>
+    </div>
+  );
+};
+
+export default ChannelList;
+// src/pages/CreateChannel.jsx
+import React, { useState } from 'react';
+import api from '../api'; // Asegúrate de que este archivo esté configurado correctamente
+import Notification from '../components/Notification';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
+
+const CreateChannel = () => {
+  const { token, userId } = useAuth(); // Obtén el token del contexto
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [server, setServer] = useState(0); // Cambia esto según la lógica de tu aplicación
+  const [notification, setNotification] = useState({ message: '', type: '' });
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const newChannel = {
+        name,
+        description,
+        server,
+        creator: userId, // ID del creador
+      };
+      const response = await api.post('/teamhub/channels/', newChannel);
+      setNotification({ message: 'Canal creado exitosamente', type: 'success' });
+      navigate('/channels'); // Redirige a la lista de canales después de crear
+    } catch (error) {
+      setNotification({ message: 'Error al crear el canal', type: 'danger' });
+      console.error('Error al crear el canal', error);
+    }
+  };
+
+  return (
+    <div>
+      <h1 className="title">Crear Canal</h1>
+      <Notification message={notification.message} type={notification.type} />
+      <form onSubmit={handleSubmit} className="box">
+        <div className="field">
+          <label className="label">Nombre</label>
+          <div className="control">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="input"
+              placeholder="Nombre del canal"
+              required
+            />
+          </div>
+        </div>
+        <div className="field">
+          <label className="label">Descripción</label>
+          <div className="control">
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="textarea"
+              placeholder="Descripción del canal"
+            />
+          </div>
+        </div>
+        <div className="field">
+          <label className="label">ID del Servidor</label>
+          <div className="control">
+            <input
+              type="number"
+              value={server}
+              onChange={(e) => setServer(e.target.value)}
+              className="input"
+              placeholder="ID del servidor"
+              required
+            />
+          </div>
+        </div>
+        <div className="control">
+          <button type="submit" className="button is-primary">Crear Canal</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default CreateChannel;
+// src/pages/CreateServer.jsx
+import React, { useState, useEffect } from 'react';
+import api from '../api'; // Asegúrate de que este archivo esté configurado correctamente
+import Notification from '../components/Notification';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
+
+const CreateServer = () => {
+  const { token } = useAuth(); // Obtén el token del contexto
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [icon, setIcon] = useState('');
+  const [owner, setOwner] = useState(null); // Estado para el owner
+  const [notification, setNotification] = useState({ message: '', type: '' });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await api.get('/users/profiles/profile_data/', {
+          headers: {
+            Authorization: `Token ${token}`, // Incluye el token en la cabecera
+          },
+        });
+        console.log('Perfil del usuario:', response.data); // Agrega este log
+        setOwner(response.data.user__id); // Establece el owner con el user__id
+        console.log('El owner es: ', owner);
+      } catch (error) {
+        setNotification({ message: 'Error al obtener los datos del perfil', type: 'danger' });
+        console.error('Error al obtener los datos del perfil', error);
+      }
+    };
+
+    fetchProfileData(); // Llama a la función para obtener los datos del perfil
+  }, [token]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const newServer = {
+        name,
+        description,
+        icon,
+        owner, // Usa el owner obtenido
+        members: [], // Cambia esto según la lógica de tu aplicación
+      };
+      const response = await api.post('/teamhub/servers/', newServer);
+      setNotification({ message: 'Servidor creado exitosamente', type: 'success' });
+      navigate('/servers'); // Redirige a la lista de servidores después de crear
+    } catch (error) {
+      setNotification({ message: 'Error al crear el servidor', type: 'danger' });
+      console.error('Error al crear el servidor', error);
+    }
+  };
+
+  return (
+    <div>
+      <h1 className="title">Crear Servidor</h1>
+      <Notification message={notification.message} type={notification.type} />
+      <form onSubmit={handleSubmit} className="box">
+        <div className="field">
+          <label className="label">Nombre</label>
+          <div className="control">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="input"
+              placeholder="Nombre del servidor"
+              required
+            />
+          </div>
+        </div>
+        <div className="field">
+          <label className="label">Descripción</label>
+          <div className="control">
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="textarea"
+              placeholder="Descripción del servidor"
+              required
+            />
+          </div>
+        </div>
+        <div className="field">
+          <label className="label">Ícono (URL)</label>
+          <div className="control">
+            <input
+              type="text"
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+              className="input"
+              placeholder="URL del ícono del servidor"
+            />
+          </div>
+        </div>
+        <div className="control">
+          <button type="submit" className="button is-primary">Crear Servidor</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default CreateServer;
+// src/pages/Home.jsx
+import React from 'react';
+
+const Home = () => {
+  return (
+    <div>
+      <h1>Bienvenido a la Aplicación de Mensajería</h1>
+      <p>Esta es la página de inicio.</p>
+    </div>
+  );
+};
+
+export default Home;
+// src/pages/Login.jsx
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../api';
+import { useAuth } from '../context/AuthContext';
+
+const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post('/api-auth/', { username, password });
+      localStorage.setItem('token', response.data.token);
+      login(response.data.token, response.data.userId); // Asegúrate de que el ID del usuario esté en la respuesta
+      navigate('/profile');
+    } catch (error) {
+      console.error('Error de autenticación', error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleLogin} className="box">
+      <h1 className="title">Iniciar Sesión</h1>
+      <div className="field">
+        <label className="label">Usuario</label>
+        <div className="control">
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="input"
+            placeholder="Usuario"
+            required
+          />
+        </div>
+      </div>
+      <div className="field">
+        <label className="label">Contraseña</label>
+        <div className="control">
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input"
+            placeholder="Contraseña"
+            required
+          />
+        </div>
+      </div>
+      <div className="control">
+        <button type="submit" className="button is-primary">Iniciar Sesión</button>
+      </div>
+    </form>
+  );
+};
+
+export default Login;
+// src/pages/NotFound.jsx
+import React from 'react';
+
+const NotFound = () => {
+  return (
+    <div>
+      <h1>404 - Página No Encontrada</h1>
+      <p>Lo sentimos, la página que estás buscando no existe.</p>
+    </div>
+  );
+};
+
+export default NotFound;
+// src/pages/Profile.jsx
+import React, { useEffect, useState } from 'react';
+import api from '../api'; // Asegúrate de que este archivo esté configurado correctamente
+import Notification from '../components/Notification';
+
+const Profile = () => {
+  const [profileData, setProfileData] = useState(null);
+  const [notification, setNotification] = useState({ message: '', type: '' });
+  const [formData, setFormData] = useState({
+    username: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    dob: '',
+    bio: '',
+    state: '',
+  });
+  const [isEditing, setIsEditing] = useState(false); // Estado para controlar la visualización del formulario
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await api.get('/users/profiles/profile_data/', {
+          headers: {
+            Authorization: `Token ${localStorage.getItem('token')}`, // Obtén el token directamente de localStorage
+          },
+        });
+        setProfileData(response.data);
+        setFormData({
+          username: response.data.username,
+          first_name: response.data.first_name,
+          last_name: response.data.last_name,
+          email: response.data.email,
+          dob: response.data.dob,
+          bio: response.data.bio,
+          state: response.data.state,
+        });
+      } catch (error) {
+        setNotification({ message: 'Error al cargar los datos del perfil', type: 'danger' });
+        console.error('Error al cargar los datos del perfil', error);
+      }
+    };
+
+    fetchProfileData(); // Llama a la función para obtener los datos del perfil
+  }, []); // El efecto se ejecuta una vez al montar el componente
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.put(`/users/profiles/${profileData.user__id}/`, formData, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('token')}`, // Incluye el token en la cabecera
+        },
+      });
+      setProfileData(response.data); // Actualiza los datos del perfil
+      setNotification({ message: 'Perfil actualizado exitosamente', type: 'success' });
+      setIsEditing(false); // Cierra el formulario de edición
+    } catch (error) {
+      setNotification({ message: 'Error al actualizar el perfil', type: 'danger' });
+      console.error('Error al actualizar el perfil', error);
+    }
+  };
+
+  if (!profileData) return <div>Cargando...</div>; // Muestra un mensaje de carga mientras se obtienen los datos
+
+  return (
+    <div>
+      <h1 className="title">Perfil de Usuario</h1>
+      <Notification message={notification.message} type={notification.type} />
+      
+      {/* Mostrar información del perfil */}
+      <div>
+        <p><strong>ID:</strong> {profileData.user__id}</p>
+        <p><strong>Nombre de usuario:</strong> {profileData.username}</p>
+        <p><strong>Nombre:</strong> {profileData.first_name}</p>
+        <p><strong>Apellido:</strong> {profileData.last_name}</p>
+        <p><strong>Email:</strong> {profileData.email}</p>
+        <p><strong>Fecha de nacimiento:</strong> {profileData.dob}</p>
+        <p><strong>Biografía:</strong> {profileData.bio}</p>
+        <p><strong>Estado:</strong> {profileData.state}</p>
+        <p><strong>Creado el:</strong> {new Date(profileData.created_at).toLocaleString()}</p>
+        <p><strong>Actualizado el:</strong> {new Date(profileData.updated_at).toLocaleString()}</p>
+      </div>
+
+      {/* Botón para editar el perfil */}
+      <button className="button is-primary" onClick={() => setIsEditing(true)}>
+        Editar Perfil
+      </button>
+
+      {/* Mostrar el formulario solo si isEditing es true */}
+      {isEditing && (
+        <form onSubmit={handleSubmit} className="box">
+          <div className="field">
+            <label className="label">Nombre de usuario</label>
+            <div className="control">
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="input"
+                required
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Nombre</label>
+            <div className="control">
+              <input
+                type="text"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
+                className="input"
+                required
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Apellido</label>
+            <div className="control">
+              <input
+                type="text"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                className="input"
+                required
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Email</label>
+            <div className="control">
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="input"
+                required
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Fecha de nacimiento</label>
+            <div className="control">
+              <input
+                type="date"
+                name="dob"
+                value={formData.dob}
+                onChange={handleChange}
+                className="input"
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Biografía</label>
+            <div className="control">
+              <textarea
+                name="bio"
+                value={formData.bio}
+                onChange={handleChange}
+                className="textarea"
+              />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Estado</label>
+            <div className="control">
+              <input
+                type="text"
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                className="input"
+              />
+            </div>
+          </div>
+          <div className="control">
+            <button type="submit" className="button is-primary">Actualizar Perfil</button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+};
+
+export default Profile;
+// src/pages/ServerDetail.jsx
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import useServers from '../hooks/useServers';
+import Notification from '../components/Notification';
+
+const ServerDetail = () => {
+  const { id } = useParams();
+  const { fetchServerById, updateServer } = useServers();
+  const [server, setServer] = useState(null);
+  const [notification, setNotification] = useState({ message: '', type: '' });
+
+  useEffect(() => {
+    const getServer = async () => {
+      const serverData = await fetchServerById(id);
+      setServer(serverData);
+    };
+    getServer();
+  }, [id]);
+
+  const handleUpdateServer = async () => {
+    const updatedData = { ...server, name: 'Nombre actualizado' }; // Cambia los datos según sea necesario
+    try {
+      await updateServer(id, updatedData);
+      setNotification({ message: 'Servidor actualizado exitosamente', type: 'success' });
+    } catch (err) {
+      setNotification({ message: 'Error al actualizar el servidor', type: 'danger' });
+    }
+  };
+
+  if (!server) return <div>Cargando...</div>;
+
+  return (
+    <div>
+      <h1 className="title">Detalles del Servidor</h1>
+      <Notification message={notification.message} type={notification.type} />
+      <p>Nombre: {server.name}</p>
+      <p>Descripción: {server.description}</p>
+      <button className="button is-primary" onClick={handleUpdateServer}>
+        Actualizar Servidor
+      </button>
+    </div>
+  );
+};
+
+export default ServerDetail;
+// src/pages/ServerList.jsx
+import React from 'react';
+import useServers from '../hooks/useServers';
+import Notification from '../components/Notification';
+import { Link } from 'react-router-dom'; // Importa Link para la navegación
+
+const ServerList = () => {
+  const { data: servers, error } = useServers();
+  const [notification, setNotification] = React.useState({ message: '', type: '' });
+
+  console.log('ServerList renderizado');
+
+  return (
+    <div>
+      <h1 className="title">Lista de Servidores</h1>
+      <Notification message={notification.message} type={notification.type} />
+      {error && <Notification message={error} type="danger" />}
+      <Link to="/servers/create" className="button is-primary">Crear Servidor</Link> {/* Botón para crear un servidor */}
+      <ul>
+        {Array.isArray(servers) && servers.length > 0 ? (
+          servers.map((server) => (
+            <li key={server.id}>
+              <h2>{server.name}</h2>
+              <p>{server.description}</p>
+              <p>Propietario: {server.owner}</p>
+              <p>Fecha de creación: {new Date(server.created_at).toLocaleString()}</p>
+              <p>Fecha de actualización: {new Date(server.updated_at).toLocaleString()}</p>
+            </li>
+          ))
+        ) : (
+          <li>No hay servidores disponibles.</li>
+        )}
+      </ul>
+    </div>
+  );
+};
+
+export default ServerList;
+// src/components/Layout.jsx
+import React from 'react';
+import Navbar from './Navbar';
+
+const Layout = ({ children }) => {
+  return (
+    <div>
+      <Navbar />
+      <main>{children}</main>
+    </div>
+  );
+};
+
+export default Layout;
+// src/components/Navbar.jsx
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+const Navbar = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, logout, UserId } = useAuth();
+ console.log('isAuthenticated:', isAuthenticated);
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <nav className="navbar">
+      <div className="navbar-brand">
+        <Link to="/" className="navbar-item">Mi Aplicación de Mensajería</Link>
+      </div>
+      <div className="navbar-menu">
+        <div className="navbar-start">
+          <Link to="/" className="navbar-item">Inicio</Link>
+          {isAuthenticated && <Link to="/profile" className="navbar-item">Perfil</Link>}
+          {isAuthenticated && <Link to="/channels" className="navbar-item">Canales</Link>}
+          {isAuthenticated && <Link to="/servers" className="navbar-item">Servidores</Link>} {/* Enlace a Servidores */}
+        </div>
+        <div className="navbar-end">
+          {isAuthenticated ? (
+            <button onClick={handleLogout} className="navbar-item button is-danger">Cerrar Sesión</button>
+          ) : (
+            <Link to="/login" className="navbar-item">Iniciar Sesión</Link>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+// src/components/Notification.jsx
+import React from 'react';
+import '../styles/Notification.css'; // Importa los estilos
+
+const Notification = ({ message, type }) => {
+  if (!message) return null;
+
+  return (
+    <div className={`notification is-${type}`}>
+      {message}
+    </div>
+  );
+};
+
+export default Notification;
+// src/components/PrivateRoute.jsx
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Asegúrate de que la ruta sea correcta
+
+const PrivateRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth(); // Obtén el estado de autenticación
+
+  return isAuthenticated ? children : <Navigate to="/login" />; // Redirige a /login si no está autenticado
+};
+
+export default PrivateRoute;
+// src/context/AuthContext.jsx
+import React, { createContext, useState, useContext } from 'react';
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null); // Agrega el estado para el ID del usuario
+
+  const login = (token, userId) => { // Modifica la función de login
+    setToken(token);
+    setUserId(userId); // Guarda el ID del usuario
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    setToken(null);
+    setUserId(null); // Limpia el ID del usuario al cerrar sesión
+    setIsAuthenticated(false);
+  };
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, token, userId, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+// src/services/authService.js
+import axios from 'axios';
+
+const API_URL = 'https://sandbox.academiadevelopers.com/api-auth/';
+
+export const login = async (credentials) => {
+  const response = await axios.post(`${API_URL}`, credentials);
+  return response.data; // Devuelve el token JWT
+};
+
+/* src/styles/Notification.css */
+.notification {
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em 0;
+  transition: opacity 0.3s ease;
+}
+
+.notification.is-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.notification.is-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+/* src/styles/styles.css */
+
+:root {
+  --primary-color: #646cff;
+  --secondary-color: #1a1a1a;
+  --background-color: #242424;
+  --text-color: rgba(255, 255, 255, 0.87);
+  --light-background: #ffffff;
+  --light-text: #213547;
+  --hover-color: #535bf2;
+  --navbar-background: #f8f9fa;
+  --navbar-hover: #e0e0e0;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+a {
+  font-weight: 500;
+  color: var(--primary-color);
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: var(--hover-color);
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--secondary-color);
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: var(--primary-color);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+nav {
+  background-color: var(--navbar-background);
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+  list-style-type: none;
+  display: flex;
+  gap: 15px;
+}
+
+.navbar-item {
+  transition: background-color 0.3s;
+}
+
+.navbar-item:hover {
+  background-color: var(--navbar-hover);
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Animaciones y efectos */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em var(--primary-color)aa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--light-text);
+    background-color: var(--light-background);
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
