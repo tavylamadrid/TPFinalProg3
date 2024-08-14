@@ -24,6 +24,13 @@ const MessageList = () => {
     }
   };
 
+  const handleEdit = (id, content) => {
+    if (message.author === userId) {
+      // Redirige a la página de edición solo si el usuario es el autor
+      window.location.href = `/messages/edit/${id}?content=${encodeURIComponent(content)}`;
+    }
+  };
+
   console.log('MessageList renderizado');
 
   return (
@@ -41,7 +48,6 @@ const MessageList = () => {
               <li key={message.id}>
                 <p><strong>Contenido:</strong> {message.content}</p>
                 <p><strong>Autor ID:</strong> {message.author}</p>
-                <p><strong>Channel:</strong> {message.channel}</p>
                 <button 
                   onClick={() => handleDelete(message.id)} 
                   className="button is-danger" 
@@ -49,8 +55,13 @@ const MessageList = () => {
                 >
                   Eliminar
                 </button>
-                {/* <p><strong>Fecha de creación:</strong> {new Date(message.created_at).toLocaleString()}</p>
-                <p><strong>Fecha de actualización:</strong> {new Date(message.updated_at).toLocaleString()}</p> */}
+                <button 
+                  onClick={() => handleEdit(message.id, message.content)} 
+                  className="button is-info" 
+                  disabled={message.author !== userId} // Desactiva el botón si el autor no es el usuario autenticado
+                >
+                  Editar
+                </button> {/* Botón para editar el mensaje */}
               </li>
             ))
           ) : (

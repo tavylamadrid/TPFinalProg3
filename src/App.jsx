@@ -17,6 +17,7 @@ import CreateChannel from './pages/CreateChannel'; // Importa el nuevo component
 import MessageList from './pages/MessageList'; // Importa la página de lista de mensajes
 import MemberList from './pages/MemberList'; // Importa la página de lista de miembros
 import CreateMessage from './pages/CreateMessage';
+import EditMessage from './pages/EditMessage'; // Importa el nuevo componente
 
 const App = () => {
   return (
@@ -87,6 +88,14 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <CreateMessage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/messages/edit/:id"
+              element={
+                <PrivateRoute>
+                  <EditMessage />
                 </PrivateRoute>
               }
             />

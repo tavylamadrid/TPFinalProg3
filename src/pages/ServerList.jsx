@@ -13,10 +13,6 @@ const ServerList = () => {
   const [notification, setNotification] = React.useState({ message: '', type: '' });
   const { userId } = useAuth(); // Obtén el ID del usuario autenticado
 
-  // Mostrar el UserId en la consola
-  console.log('UserId server list:', userId);
-  //console.log('Members:', members); // Verifica que los miembros se estén obteniendo correctamente
-
 const isMember = (serverId) => {
   const isMember = members && members.some(member => {
     //console.log(`Comparando: serverId=${serverId}, member.server=${member.server}, UserId=${UserId}, member.user=${member.user}`);
@@ -33,7 +29,6 @@ const isMember = (serverId) => {
         server: serverId, // ID del servidor al que se une
         is_onboarded: true, // Puedes ajustar esto según tu lógica
       });
-      console.log('UserId7777777:', response);
       setNotification({ message: 'Te has unido al servidor exitosamente.', type: 'success' });
     } catch (err) {
       setNotification({ message: 'Error al unirte al servidor.', type: 'danger' });
@@ -58,8 +53,8 @@ const isMember = (serverId) => {
               <h2>{server.name}</h2>
               <p>{server.description}</p>
               <p>Propietario: {server.owner}</p>
-              <p>Fecha de creación: {new Date(server.created_at).toLocaleString()}</p>
-              <p>Fecha de actualización: {new Date(server.updated_at).toLocaleString()}</p>
+              {/*<p>Fecha de creación: {new Date(server.created_at).toLocaleString()}</p>
+              <p>Fecha de actualización: {new Date(server.updated_at).toLocaleString()}</p>*/}
               {isMember(server.id) ? (
                 <button onClick={() => handleLeaveServer(server.id)} className="button is-danger">Abandonar</button> // Botón "Abandonar"
               ) : (
