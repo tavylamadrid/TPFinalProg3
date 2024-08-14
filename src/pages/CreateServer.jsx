@@ -40,7 +40,7 @@ const CreateServer = () => {
       const newServer = {
         name,
         description,
-        icon,
+        //icon,
         owner, // Usa el owner obtenido
         members: [], // Cambia esto según la lógica de tu aplicación
       };
@@ -80,18 +80,6 @@ const CreateServer = () => {
               className="textarea"
               placeholder="Descripción del servidor"
               required
-            />
-          </div>
-        </div>
-        <div className="field">
-          <label className="label">Ícono (URL)</label>
-          <div className="control">
-            <input
-              type="text"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              className="input"
-              placeholder="URL del ícono del servidor"
             />
           </div>
         </div>
