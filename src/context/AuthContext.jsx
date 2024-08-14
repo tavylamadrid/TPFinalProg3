@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     setUserId(null); // Limpia el ID del usuario al cerrar sesión
     setIsAuthenticated(false);
   };
-
+  console.log('UserId context:', userId);
   return (
     <AuthContext.Provider value={{ isAuthenticated, token, userId, login, logout }}>
       {children}

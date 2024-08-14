@@ -11,16 +11,16 @@ const ServerList = () => {
   const { data: servers, error } = useServers();
   const { data: members } = useMembers(); // Obtén la lista de miembros
   const [notification, setNotification] = React.useState({ message: '', type: '' });
-  const { UserId } = useAuth(); // Obtén el ID del usuario autenticado
+  const { userId } = useAuth(); // Obtén el ID del usuario autenticado
 
   // Mostrar el UserId en la consola
-  //console.log('UserId:', UserId);
+  console.log('UserId server list:', userId);
   //console.log('Members:', members); // Verifica que los miembros se estén obteniendo correctamente
 
 const isMember = (serverId) => {
   const isMember = members && members.some(member => {
     //console.log(`Comparando: serverId=${serverId}, member.server=${member.server}, UserId=${UserId}, member.user=${member.user}`);
-    return member.server === serverId && member.user === UserId;
+    return member.server === serverId && member.user === userId;
   });
   return isMember;
 };
@@ -29,7 +29,7 @@ const isMember = (serverId) => {
   const handleJoinServer = async (serverId) => {
     try {
       const response = await api.post('/teamhub/members/', {
-        user: UserId, // ID del usuario autenticado
+        user: userId, // ID del usuario autenticado
         server: serverId, // ID del servidor al que se une
         is_onboarded: true, // Puedes ajustar esto según tu lógica
       });
