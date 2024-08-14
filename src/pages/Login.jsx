@@ -15,7 +15,7 @@ const Login = () => {
     try {
       const response = await api.post('/api-auth/', { username, password });
       localStorage.setItem('token', response.data.token);
-      login(response.data.token, response.data.userId); // Asegúrate de que el ID del usuario esté en la respuesta
+      login(response.data.token, response.data.userId);
       navigate('/profile');
     } catch (error) {
       console.error('Error de autenticación', error);

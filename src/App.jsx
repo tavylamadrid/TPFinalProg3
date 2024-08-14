@@ -14,6 +14,8 @@ import PrivateRoute from './components/PrivateRoute';
 import NotFound from './pages/NotFound';
 import CreateServer from './pages/CreateServer'; // Importa el nuevo componente
 import CreateChannel from './pages/CreateChannel'; // Importa el nuevo componente
+import MessageList from './pages/MessageList'; // Importa la página de lista de mensajes
+import MemberList from './pages/MemberList'; // Importa la página de lista de miembros
 
 const App = () => {
   return (
@@ -68,6 +70,22 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <ServerDetail />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <PrivateRoute>
+                  <MessageList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/members"
+              element={
+                <PrivateRoute>
+                  <MemberList />
                 </PrivateRoute>
               }
             />

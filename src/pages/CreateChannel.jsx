@@ -1,17 +1,37 @@
 // src/pages/CreateChannel.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api'; // Asegúrate de que este archivo esté configurado correctamente
 import Notification from '../components/Notification';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
 
 const CreateChannel = () => {
-  const { token, userId } = useAuth(); // Obtén el token del contexto
+  const { token } = useAuth(); // Obtén el token del contexto
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [server, setServer] = useState(0); // Cambia esto según la lógica de tu aplicación
+  const [creator, setCreator] = useState(null); // Estado para creator
   const [notification, setNotification] = useState({ message: '', type: '' });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await api.get('/users/profiles/profile_data/', {
+          headers: {
+            Authorization: `Token ${token}`, // Incluye el token en la cabecera
+          },
+        });
+        console.log('Perfil del usuario:', response.data); // Agrega este log
+        setCreator(response.data.user__id); // Establece el creator con el user__id
+      } catch (error) {
+        setNotification({ message: 'Error al obtener los datos del perfil', type: 'danger' });
+        console.error('Error al obtener los datos del perfil', error);
+      }
+    };
+
+    fetchProfileData(); // Llama a la función para obtener los datos del perfil
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +40,7 @@ const CreateChannel = () => {
         name,
         description,
         server,
-        creator: userId, // ID del creador
+        creator, // ID del creador
       };
       const response = await api.post('/teamhub/channels/', newChannel);
       setNotification({ message: 'Canal creado exitosamente', type: 'success' });

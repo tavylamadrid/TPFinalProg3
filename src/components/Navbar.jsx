@@ -23,6 +23,8 @@ const Navbar = () => {
           {isAuthenticated && <Link to="/profile" className="navbar-item">Perfil</Link>}
           {isAuthenticated && <Link to="/channels" className="navbar-item">Canales</Link>}
           {isAuthenticated && <Link to="/servers" className="navbar-item">Servidores</Link>} {/* Enlace a Servidores */}
+          {isAuthenticated && <Link to="/messages" className="navbar-item">Mensajes</Link>} {/* Enlace a Mensajes */}
+          {isAuthenticated && <Link to="/members" className="navbar-item">Miembros</Link>} {/* Enlace a Miembros */}
         </div>
         <div className="navbar-end">
           {isAuthenticated ? (

@@ -24,7 +24,6 @@ const CreateServer = () => {
         });
         console.log('Perfil del usuario:', response.data); // Agrega este log
         setOwner(response.data.user__id); // Establece el owner con el user__id
-        console.log('El owner es: ', owner);
       } catch (error) {
         setNotification({ message: 'Error al obtener los datos del perfil', type: 'danger' });
         console.error('Error al obtener los datos del perfil', error);
