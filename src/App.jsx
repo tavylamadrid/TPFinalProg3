@@ -18,6 +18,7 @@ import MessageList from './pages/MessageList'; // Importa la página de lista de
 import MemberList from './pages/MemberList'; // Importa la página de lista de miembros
 import CreateMessage from './pages/CreateMessage';
 import EditMessage from './pages/EditMessage'; // Importa el nuevo componente
+import EditServer from './pages/EditServer';
 
 const App = () => {
   return (
@@ -56,6 +57,14 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <ServerList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/servers/edit/:id"
+              element={
+                <PrivateRoute>
+                  <EditServer />
                 </PrivateRoute>
               }
             />
