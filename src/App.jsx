@@ -16,6 +16,7 @@ import CreateServer from './pages/CreateServer'; // Importa el nuevo componente
 import CreateChannel from './pages/CreateChannel'; // Importa el nuevo componente
 import MessageList from './pages/MessageList'; // Importa la página de lista de mensajes
 import MemberList from './pages/MemberList'; // Importa la página de lista de miembros
+import CreateMessage from './pages/CreateMessage';
 
 const App = () => {
   return (
@@ -78,6 +79,14 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <MessageList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/messages/create"
+              element={
+                <PrivateRoute>
+                  <CreateMessage />
                 </PrivateRoute>
               }
             />

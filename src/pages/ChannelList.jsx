@@ -17,10 +17,15 @@ const ChannelList = () => {
         {channels.length > 0 ? (
           channels.map((channel) => (
             <li key={channel.id}>
+              <h2>{channel.id}</h2>
               <h2>{channel.name}</h2>
               <p>{channel.description}</p>
-              <p>Creado el: {new Date(channel.created_at).toLocaleString()}</p>
-              <p>Actualizado el: {new Date(channel.updated_at).toLocaleString()}</p>
+              <p>{channel.creator}</p>
+              <h2>{channel.server}</h2>
+              {/* Enlace para crear un mensaje en este canal */}
+              <Link to={`/messages/create?channel=${channel.id}`} className="button is-link">Crear Mensaje</Link>
+              {/* <p>Creado el: {new Date(channel.created_at).toLocaleString()}</p>
+              <p>Actualizado el: {new Date(channel.updated_at).toLocaleString()}</p> */}
             </li>
           ))
         ) : (
