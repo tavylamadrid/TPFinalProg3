@@ -1,4 +1,3 @@
-// src/pages/EditServer.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import api from '../api';
@@ -6,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import Notification from '../components/Notification';
 
 const EditServer = () => {
-  const { id } = useParams(); // Obtén el ID del servidor de la URL
+  const { id } = useParams();
   const { userId } = useAuth();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -15,19 +14,6 @@ const EditServer = () => {
 
   const [server, setServer] = useState({ name: initialName, description: initialDescription });
   const [notification, setNotification] = useState({ message: '', type: '' });
-
-  useEffect(() => {
-    const fetchServer = async () => {
-      try {
-        const response = await api.get(`/teamhub/servers/${id}/`);
-        setServer(response.data);
-      } catch (err) {
-        setNotification({ message: 'Error al obtener el servidor.', type: 'danger' });
-      }
-    };
-
-    fetchServer();
-  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

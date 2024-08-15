@@ -62,7 +62,7 @@ const ServerList = () => {
               <p>Propietario: {server.owner}</p>
               {isOwner(server.id) && (
                 <>
-                  <Link to={`/servers/edit/${server.id}?name=${encodeURIComponent(server.name)}&description=${encodeURIComponent(server.description)}`} className="button is-info">Editar</Link>
+                  <Link to={`/servers/edit/${server.id}/?name=${encodeURIComponent(server.name)}&description=${encodeURIComponent(server.description)}`} className="button is-info">Editar</Link>
                   <button onClick={() => handleDeleteServer(server.id)} className="button is-danger">Eliminar</button>
                 </>
               )}

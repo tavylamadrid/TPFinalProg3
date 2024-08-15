@@ -60,14 +60,14 @@ const App = () => {
                 </PrivateRoute>
               }
             />
-            <Route
-              path="/servers/edit/:id"
-              element={
-                <PrivateRoute>
-                  <EditServer />
-                </PrivateRoute>
-              }
-            />
+			<Route
+			  path="/servers/edit/:id"
+			  element={
+			    <PrivateRoute>
+			      <EditServer />
+			    </PrivateRoute>
+			  }
+			/>
             <Route
               path="/servers/create" // Nueva ruta para crear un servidor
               element={

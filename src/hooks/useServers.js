@@ -8,7 +8,7 @@ const useServers = () => {
 
   const fetchServers = async () => {
     try {
-      const response = await api.get('/teamhub/servers/');
+      const response = await api.get('/teamhub/servers/?page=2');
       setData(response.data.results); // Asumiendo que la respuesta tiene la lista de servidores
     } catch (err) {
       setError('Error al obtener la lista de servidores');
