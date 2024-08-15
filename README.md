@@ -1,4 +1,4 @@
-### MensApp
+### MensApp (casi terminada)
 Aplicación React que incluye la configuración de una API, rutas, componentes y estilos.
 
 ## Estructura del Proyecto
