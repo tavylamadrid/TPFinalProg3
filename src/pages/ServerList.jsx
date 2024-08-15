@@ -13,6 +13,22 @@ const ServerList = () => {
   const [notification, setNotification] = React.useState({ message: '', type: '' });
   const { userId } = useAuth();
 
+  const handleJoinServer = async (serverId) => {
+    try {
+      const response = await api.post('/teamhub/members/', {
+        user: userId, // ID del usuario autenticado
+        server: serverId, // ID del servidor al que se une
+        is_onboarded: true, // Puedes ajustar esto según tu lógica
+      });
+      setNotification({ message: 'Te has unido al servidor exitosamente.', type: 'success' });
+    } catch (err) {
+      setNotification({ message: 'Error al unirte al servidor.', type: 'danger' });
+    }
+    };
+  const handleLeaveServer = async (serverId) => {
+    console.log(`Abandonar servidor con ID: ${serverId}`);
+   };
+   
   const isMember = (serverId) => {
     return members && members.some(member => member.server === serverId && member.user === userId);
   };

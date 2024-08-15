@@ -73,21 +73,21 @@ const Profile = () => {
 
   return (
     <div>
-      <h1 className="title">Perfil de Usuario</h1>
+      <h1 className="title">Hola! {profileData.first_name}</h1>
       <Notification message={notification.message} type={notification.type} />
       
       {/* Mostrar información del perfil */}
       <div>
         <p><strong>ID:</strong> {profileData.user__id}</p>
         <p><strong>Nombre de usuario:</strong> {profileData.username}</p>
-        <p><strong>Nombre:</strong> {profileData.first_name}</p>
-        <p><strong>Apellido:</strong> {profileData.last_name}</p>
+        {/*<p><strong>Nombre:</strong> {profileData.first_name}</p>
+        <p><strong>Apellido:</strong> {profileData.last_name}</p>*/}
         <p><strong>Email:</strong> {profileData.email}</p>
-        <p><strong>Fecha de nacimiento:</strong> {profileData.dob}</p>
+        {/*<p><strong>Fecha de nacimiento:</strong> {profileData.dob}</p>
         <p><strong>Biografía:</strong> {profileData.bio}</p>
         <p><strong>Estado:</strong> {profileData.state}</p>
         <p><strong>Creado el:</strong> {new Date(profileData.created_at).toLocaleString()}</p>
-        <p><strong>Actualizado el:</strong> {new Date(profileData.updated_at).toLocaleString()}</p>
+        <p><strong>Actualizado el:</strong> {new Date(profileData.updated_at).toLocaleString()}</p>*/}
       </div>
 
       {/* Botón para editar el perfil */}
