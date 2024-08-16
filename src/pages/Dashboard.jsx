@@ -1,5 +1,5 @@
 // src/pages/Dashboard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ServerList from './ServerList'; // Asegúrate de que este componente esté implementado
 import ChannelList from './ChannelList'; // Asegúrate de que este componente esté implementado
 import MessageList from './MessageList'; // Asegúrate de que este componente esté implementado

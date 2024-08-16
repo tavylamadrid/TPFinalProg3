@@ -2,13 +2,13 @@
 import React from 'react';
 import useMessages from '../hooks/useMessages';
 import Notification from '../components/Notification';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Importa Link y useNavigate
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
 
-const MessageList = ({ channelId }) => { // Acepta channelId como prop
-  const navigate = useNavigate();
-  const { data: messages, error, loading, refetch } = useMessages(channelId); // Usa channelId para obtener mensajes
+const MessageList = () => {
+  const navigate = useNavigate(); // Inicializa useNavigate
+  const { data: messages, error, loading, refetch } = useMessages();
   const [notification, setNotification] = React.useState({ message: '', type: '' });
   const { userId } = useAuth();
 
@@ -41,7 +41,7 @@ const MessageList = ({ channelId }) => { // Acepta channelId como prop
       <h1 className="title">Lista de Mensajes</h1>
       <Notification message={notification.message} type={notification.type} />
       {error && <Notification message={error} type="danger" />}
-      {/*<Link to="/messages/create" className="button is-primary">Crear Mensaje</Link>*/}
+      <Link to="/messages/create" className="button is-primary">Crear Mensaje</Link>
       {loading ? (
         <p>Cargando mensajes...</p>
       ) : (

@@ -5,28 +5,38 @@ import Notification from '../components/Notification';
 import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import useMembers from '../hooks/useMembers';
-import CreateServerModal from '../components/CreateServerModal';
+import CreateServerModal from '../components/CreateServerModal'; // Importa el modal
 
 const ServerList = ({ onSelectServer }) => {
-  const { data: servers, error, loading, refetch } = useServers();
+  const { data: servers, error, refetch } = useServers();
   const { data: members } = useMembers();
   const [notification, setNotification] = useState({ message: '', type: '' });
   const { userId } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
 
   const handleJoinServer = async (serverId) => {
     try {
-      await api.post('/teamhub/members/', {
-        user: userId,
-        server: serverId,
-        is_onboarded: true,
+      const response = await api.post('/teamhub/members/', {
+        user: userId, // ID del usuario autenticado
+        server: serverId, // ID del servidor al que se une
+        is_onboarded: true, // Puedes ajustar esto según tu lógica
       });
       setNotification({ message: 'Te has unido al servidor exitosamente.', type: 'success' });
       refetch(); // Vuelve a obtener la lista de servidores
     } catch (err) {
-      console.error(err);
       setNotification({ message: 'Error al unirte al servidor.', type: 'danger' });
     }
+    };
+  const handleLeaveServer = async (serverId) => {
+    console.log(`Abandonar servidor con ID: ${serverId}`);
+   };
+   
+  const isMember = (serverId) => {
+    return members && members.some(member => member.server === serverId && member.user === userId);
+  };
+
+  const isOwner = (serverId) => {
+    return servers && servers.some(server => server.id === serverId && server.owner === userId);
   };
 
   const handleDeleteServer = async (serverId) => {
@@ -36,38 +46,16 @@ const ServerList = ({ onSelectServer }) => {
         setNotification({ message: 'Servidor eliminado exitosamente.', type: 'success' });
         refetch(); // Vuelve a obtener la lista de servidores
       } catch (err) {
-        console.error(err);
         setNotification({ message: 'Error al eliminar el servidor.', type: 'danger' });
       }
     }
   };
 
-  const handleServerCreated = async (newServer) => {
-    try {
-      // Unirse al servidor recién creado
-      await api.post('/teamhub/members/', {
-        user: userId,
-        server: newServer.id, // Asegúrate de que newServer tenga el ID correcto
-        is_onboarded: true,
-      });
-      setNotification({ message: 'Te has unido al servidor exitosamente.', type: 'success' });
-      refetch(); // Vuelve a obtener la lista de servidores
-    } catch (err) {
-      console.error(err);
-      setNotification({ message: 'Error al unirte al servidor.', type: 'danger' });
-    }
+  const handleServerCreated = (newServer) => {
+    // Aquí puedes actualizar la lista de servidores si es necesario
+    // Por ejemplo, podrías agregar el nuevo servidor al estado local
+    // o hacer una nueva llamada a la API para obtener la lista actualizada
   };
-
-  const isOwner = (serverId) => {
-    return servers && servers.some(server => server.id === serverId && server.owner === userId);
-  };
-
-  const isMember = (serverId) => {
-    return members && members.some(member => member.server === serverId && member.user === userId);
-  };
-
-  if (loading) return <p>Cargando servidores...</p>;
-  if (error) return <p>{error}</p>;
 
   return (
     <div>
@@ -102,6 +90,7 @@ const ServerList = ({ onSelectServer }) => {
         )}
       </ul>
 
+      {/* Modal para crear servidor */}
       <CreateServerModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
