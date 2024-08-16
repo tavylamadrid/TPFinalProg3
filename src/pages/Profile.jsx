@@ -11,9 +11,9 @@ const Profile = () => {
     first_name: '',
     last_name: '',
     email: '',
-    dob: '',
-    bio: '',
-    state: '',
+    //dob: '',
+    //bio: '',
+    //state: '',
   });
   const [isEditing, setIsEditing] = useState(false); // Estado para controlar la visualización del formulario
 
@@ -31,9 +31,9 @@ const Profile = () => {
           first_name: response.data.first_name,
           last_name: response.data.last_name,
           email: response.data.email,
-          dob: response.data.dob,
-          bio: response.data.bio,
-          state: response.data.state,
+          //dob: response.data.dob,
+          //bio: response.data.bio,
+          //state: response.data.state,
         });
       } catch (error) {
         setNotification({ message: 'Error al cargar los datos del perfil', type: 'danger' });
@@ -150,7 +150,7 @@ const Profile = () => {
               />
             </div>
           </div>
-          <div className="field">
+          {/*<div className="field">
             <label className="label">Fecha de nacimiento</label>
             <div className="control">
               <input
@@ -184,7 +184,7 @@ const Profile = () => {
                 className="input"
               />
             </div>
-          </div>
+          </div>*/}
           <div className="control">
             <button type="submit" className="button is-primary">Actualizar Perfil</button>
           </div>

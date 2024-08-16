@@ -19,7 +19,7 @@ const Navbar = () => {
       </div>
       <div className="navbar-menu">
         <div className="navbar-start">
-          <Link to="/" className="navbar-item">Inicio</Link>
+          <Link to="/dashboard" className="navbar-item">Inicio</Link>
           {isAuthenticated && <Link to="/profile" className="navbar-item">Perfil</Link>}
           {isAuthenticated && <Link to="/channels" className="navbar-item">Canales</Link>}
           {isAuthenticated && <Link to="/servers" className="navbar-item">Servidores</Link>} {/* Enlace a Servidores */}

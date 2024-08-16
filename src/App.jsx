@@ -6,7 +6,6 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
-//import ChannelDetail from './pages/ChannelDetail';
 import ChannelList from './pages/ChannelList';
 import ServerList from './pages/ServerList'; // Importa la página de lista de servidores
 import ServerDetail from './pages/ServerDetail'; // Asegúrate de importar ServerDetail
@@ -19,6 +18,7 @@ import MemberList from './pages/MemberList'; // Importa la página de lista de m
 import CreateMessage from './pages/CreateMessage';
 import EditMessage from './pages/EditMessage'; // Importa el nuevo componente
 import EditServer from './pages/EditServer';
+import Dashboard from './pages/Dashboard';
 
 const App = () => {
   return (
@@ -28,6 +28,14 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="/profile"
               element={
