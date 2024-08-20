@@ -8,8 +8,8 @@ import useMembers from '../hooks/useMembers';
 import CreateServerModal from '../components/CreateServerModal';
 
 const ServerList = ({ onSelectServer }) => {
-  const { data: servers, error, loading, refetch } = useServers();
-  const { data: members } = useMembers();
+  const { data: servers, error, loading, refetch: refetchServers } = useServers();
+  const { data: members, refetch: refetchMembers } = useMembers();
   const [notification, setNotification] = useState({ message: '', type: '' });
   const { userId } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,7 +22,8 @@ const ServerList = ({ onSelectServer }) => {
         is_onboarded: true,
       });
       setNotification({ message: 'Te has unido al servidor exitosamente.', type: 'success' });
-      refetch(); // Vuelve a obtener la lista de servidores
+      refetchMembers(); 
+      refetchServers(); 
     } catch (err) {
       console.error(err);
       setNotification({ message: 'Error al unirte al servidor.', type: 'danger' });
@@ -34,7 +35,8 @@ const ServerList = ({ onSelectServer }) => {
       try {
         await api.delete(`/teamhub/servers/${serverId}/`);
         setNotification({ message: 'Servidor eliminado exitosamente.', type: 'success' });
-        refetch(); // Vuelve a obtener la lista de servidores
+      refetchMembers(); 
+      refetchServers(); 
       } catch (err) {
         console.error(err);
         setNotification({ message: 'Error al eliminar el servidor.', type: 'danger' });
@@ -44,14 +46,14 @@ const ServerList = ({ onSelectServer }) => {
 
   const handleServerCreated = async (newServer) => {
     try {
-      // Unirse al servidor recién creado
       await api.post('/teamhub/members/', {
         user: userId,
-        server: newServer.id, // Asegúrate de que newServer tenga el ID correcto
-        is_onboarded: true,
+        server: newServer.id, 
+        is_onboarded: false,
       });
       setNotification({ message: 'Te has unido al servidor exitosamente.', type: 'success' });
-      refetch(); // Vuelve a obtener la lista de servidores
+      refetchMembers(); 
+      refetchServers(); 
     } catch (err) {
       console.error(err);
       setNotification({ message: 'Error al unirte al servidor.', type: 'danger' });
@@ -63,7 +65,9 @@ const ServerList = ({ onSelectServer }) => {
   };
 
   const isMember = (serverId) => {
-    return members && members.some(member => member.server === serverId && member.user === userId);
+    const memberStatus = members && members.some(member => member.server === serverId && member.user === userId);
+    //console.log(`User ${userId} member status for server ${serverId}: ${memberStatus}`);
+    return memberStatus;
   };
 
   if (loading) return <p>Cargando servidores...</p>;
