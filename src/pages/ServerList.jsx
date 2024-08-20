@@ -6,13 +6,16 @@ import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import useMembers from '../hooks/useMembers';
 import CreateServerModal from '../components/CreateServerModal';
+import EditServerModal from '../components/EditServerModal'; // Importa el nuevo modal
 
 const ServerList = ({ onSelectServer }) => {
   const { data: servers, error, loading, refetch: refetchServers } = useServers();
   const { data: members, refetch: refetchMembers } = useMembers();
   const [notification, setNotification] = useState({ message: '', type: '' });
   const { userId } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedServer, setSelectedServer] = useState(null); // Estado para el servidor seleccionado
 
   const handleJoinServer = async (serverId) => {
     try {
@@ -35,8 +38,8 @@ const ServerList = ({ onSelectServer }) => {
       try {
         await api.delete(`/teamhub/servers/${serverId}/`);
         setNotification({ message: 'Servidor eliminado exitosamente.', type: 'success' });
-      refetchMembers(); 
-      refetchServers(); 
+        refetchMembers(); 
+        refetchServers(); 
       } catch (err) {
         console.error(err);
         setNotification({ message: 'Error al eliminar el servidor.', type: 'danger' });
@@ -60,14 +63,21 @@ const ServerList = ({ onSelectServer }) => {
     }
   };
 
+  const handleServerUpdated = (updatedServer) => {
+    refetchServers(); // Vuelve a obtener la lista de servidores
+  };
+
+  const openEditModal = (server) => {
+    setSelectedServer(server);
+    setIsEditModalOpen(true);
+  };
+
   const isOwner = (serverId) => {
     return servers && servers.some(server => server.id === serverId && server.owner === userId);
   };
 
   const isMember = (serverId) => {
-    const memberStatus = members && members.some(member => member.server === serverId && member.user === userId);
-    //console.log(`User ${userId} member status for server ${serverId}: ${memberStatus}`);
-    return memberStatus;
+    return members && members.some(member => member.server === serverId && member.user === userId);
   };
 
   if (loading) return <p>Cargando servidores...</p>;
@@ -77,7 +87,7 @@ const ServerList = ({ onSelectServer }) => {
     <div>
       <h1 className="title">Lista de Servidores</h1>
       <Notification message={notification.message} type={notification.type} />
-      <button className="button is-primary" onClick={() => setIsModalOpen(true)}>Crear Servidor</button>
+      <button className="button is-primary" onClick={() => setIsCreateModalOpen(true)}>Crear Servidor</button>
       <ul>
         {Array.isArray(servers) && servers.length > 0 ? (
           servers.map((server) => (
@@ -87,7 +97,7 @@ const ServerList = ({ onSelectServer }) => {
               <p>Propietario: {server.owner}</p>
               {isOwner(server.id) && (
                 <>
-                  <button className="button is-info">Editar</button>
+                  <button className="button is-info" onClick={() => openEditModal(server)}>Editar</button>
                   <button onClick={() => handleDeleteServer(server.id)} className="button is-danger">Eliminar</button>
                 </>
               )}
@@ -107,9 +117,16 @@ const ServerList = ({ onSelectServer }) => {
       </ul>
 
       <CreateServerModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
         onServerCreated={handleServerCreated} 
+      />
+      
+      <EditServerModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+        server={selectedServer} 
+        onServerUpdated={handleServerUpdated} 
       />
     </div>
   );

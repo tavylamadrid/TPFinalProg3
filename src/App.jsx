@@ -68,7 +68,7 @@ const App = () => {
                 </PrivateRoute>
               }
             />
-			<Route
+			{/*<Route
 			  path="/servers/edit/:id"
 			  element={
 			    <PrivateRoute>
@@ -76,7 +76,7 @@ const App = () => {
 			    </PrivateRoute>
 			  }
 			/>
-            {/*<Route
+            <Route
               path="/servers/create" // Nueva ruta para crear un servidor
               element={
                 <PrivateRoute>

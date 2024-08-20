@@ -10,7 +10,7 @@ const useServers = () => {
   const fetchServers = async () => {
     setLoading(true); // Inicia la carga
     try {
-      const response = await api.get('/teamhub/servers/');
+      const response = await api.get('/teamhub/servers/?page=2');
       setData(response.data.results); 
       setError(null); 
     } catch (err) {
