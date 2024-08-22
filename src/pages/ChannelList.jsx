@@ -5,6 +5,7 @@ import useChannel from '../hooks/useChannel';
 import Notification from '../components/Notification';
 import CreateChannelModal from '../components/CreateChannelModal';
 import EditChannelModal from '../components/EditChannelModal';
+import api from '../api';
 
 const ChannelList = ({ serverId, onSelectChannel }) => {
   const location = useLocation();
@@ -39,7 +40,7 @@ const ChannelList = ({ serverId, onSelectChannel }) => {
 
   return (
     <div>
-      <h1 className="title">Lista de Canales</h1>
+      {/*<h1 className="title">Lista de Canales</h1>*/}
       {loading && <p>Cargando...</p>}
       {error && <Notification message={error} type="danger" />}
       <button onClick={() => setIsCreateModalOpen(true)} className="button is-primary">Crear Canal</button>

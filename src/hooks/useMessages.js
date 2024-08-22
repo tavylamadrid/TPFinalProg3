@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
 
-const useMessages = (channelId) => { // Acepta channelId como argumento
+const useMessages = (channelId) => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,12 @@ const useMessages = (channelId) => { // Acepta channelId como argumento
     fetchMessages();
   }, [channelId]); // Dependencia de channelId
 
-  return { data, error, loading, refetch: fetchMessages }; // Devuelve refetch
+  // Exponer la función refetch
+  const refetchMessages = () => {
+    fetchMessages();
+  };
+
+  return { data, error, loading, refetchMessages }; // Devuelve refetchMessages
 };
 
 export default useMessages;
