@@ -17,7 +17,7 @@ import MessageList from './pages/MessageList'; // Importa la página de lista de
 import MemberList from './pages/MemberList'; // Importa la página de lista de miembros
 import CreateMessage from './pages/CreateMessage';
 import EditMessage from './pages/EditMessage'; // Importa el nuevo componente
-import EditServer from './pages/EditServer';
+//import EditServer from './pages/EditServer';
 import Dashboard from './pages/Dashboard';
 
 const App = () => {

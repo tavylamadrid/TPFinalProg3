@@ -85,7 +85,7 @@ const ServerList = ({ onSelectServer }) => {
 
   return (
     <div>
-      <h1 className="title">Lista de Servidores</h1>
+      {/*<h1 className="title">Lista de Servidores</h1>*/}
       <Notification message={notification.message} type={notification.type} />
       <button className="button is-primary" onClick={() => setIsCreateModalOpen(true)}>Crear Servidor</button>
       <ul>

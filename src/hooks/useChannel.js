@@ -25,7 +25,12 @@ const useChannel = (serverId) => {
     fetchChannels();
   }, [serverId]);
 
-  return { channels, error, loading };
+  // Exponer la función refetch
+  const refetchChannels = () => {
+    fetchChannels();
+  };
+
+  return { channels, error, loading, refetchChannels }; // Devuelve refetchChannels
 };
 
 export default useChannel;
