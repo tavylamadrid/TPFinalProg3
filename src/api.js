@@ -5,9 +5,8 @@ const api = axios.create({
   baseURL: 'https://sandbox.academiadevelopers.com/',
 });
 
-// Interceptor para agregar el token JWT a las solicitudes
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token'); // se guarda el token en localStorage
+  const token = localStorage.getItem('token'); 
   if (token) {
     config.headers.Authorization = `Token ${token}`;
   }
