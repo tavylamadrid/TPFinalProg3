@@ -21,10 +21,10 @@ const Navbar = () => {
         <div className="navbar-start">
           <Link to="/dashboard" className="navbar-item">Inicio</Link>
           {isAuthenticated && <Link to="/profile" className="navbar-item">Perfil</Link>}
-          {isAuthenticated && <Link to="/channels" className="navbar-item">Canales</Link>}
-          {isAuthenticated && <Link to="/servers" className="navbar-item">Servidores</Link>} {/* Enlace a Servidores */}
-          {isAuthenticated && <Link to="/messages" className="navbar-item">Mensajes</Link>} {/* Enlace a Mensajes */}
-          {isAuthenticated && <Link to="/members" className="navbar-item">Miembros</Link>} {/* Enlace a Miembros */}
+          {/*{isAuthenticated && <Link to="/channels" className="navbar-item">Canales</Link>}
+          {isAuthenticated && <Link to="/servers" className="navbar-item">Servidores</Link>}
+          {isAuthenticated && <Link to="/messages" className="navbar-item">Mensajes</Link>} 
+          {isAuthenticated && <Link to="/members" className="navbar-item">Miembros</Link>} */}
         </div>
         <div className="navbar-end">
           {isAuthenticated ? (

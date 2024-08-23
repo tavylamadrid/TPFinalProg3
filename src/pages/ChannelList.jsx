@@ -52,7 +52,7 @@ const ChannelList = ({ serverId, onSelectChannel }) => {
               <p>{channel.description}</p>
               <p>Creado por: {channel.creator}</p>
               <p>Servidor: {channel.server}</p>
-              <Link to={`/messages/create?channel=${channel.id}`} className="button is-link">Crear Mensaje</Link>
+              {/*<Link to={`/messages/create?channel=${channel.id}`} className="button is-link">Crear Mensaje</Link>*/}
               <button onClick={() => { setSelectedChannel(channel); setIsEditModalOpen(true); }} className="button is-info">Editar Canal</button>
               <button onClick={() => handleDeleteChannel(channel.id)} className="button is-danger">Eliminar Canal</button>
               <button onClick={() => onSelectChannel(channel.id)} className="button is-info">Ver Mensajes</button>

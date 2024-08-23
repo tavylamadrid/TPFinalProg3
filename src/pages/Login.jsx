@@ -13,27 +13,18 @@ const Login = () => {
 const handleLogin = async (e) => {
   e.preventDefault();
   try {
-    // Primero, intenta iniciar sesión
     const response = await api.post('/api-auth/', { username, password });
     const token = response.data.token;
-
-    // Guarda el token en localStorage
     localStorage.setItem('token', token);
 
-    // Realiza una solicitud para obtener los datos del perfil
     const profileResponse = await api.get('/users/profiles/profile_data/', {
       headers: {
         Authorization: `Token ${token}`,
       },
     });
-
-    // Obtén el user__id del perfil
     const userId = profileResponse.data.user__id;
-
-    // Llama a la función de login del contexto con el token y el userId
     login(token, userId);
 
-    // Redirige al perfil
     navigate('/profile');
   } catch (error) {
     console.error('Error de autenticación', error);
