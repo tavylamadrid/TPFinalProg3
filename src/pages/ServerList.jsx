@@ -6,16 +6,17 @@ import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import useMembers from '../hooks/useMembers';
 import CreateServerModal from '../components/CreateServerModal';
-import EditServerModal from '../components/EditServerModal'; // Importa el nuevo modal
+import EditServerModal from '../components/EditServerModal';
+import '../styles/Pagination.css';
 
 const ServerList = ({ onSelectServer }) => {
-  const { data: servers, error, loading, refetch: refetchServers } = useServers();
+  const { data: servers, error, loading, nextPage, prevPage, currentPage, fetchServers, refetch: refetchServers } = useServers();
   const { data: members, refetch: refetchMembers } = useMembers();
   const [notification, setNotification] = useState({ message: '', type: '' });
   const { userId } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedServer, setSelectedServer] = useState(null); // Estado para el servidor seleccionado
+  const [selectedServer, setSelectedServer] = useState(null);
 
   const handleJoinServer = async (serverId) => {
     try {
@@ -65,6 +66,7 @@ const ServerList = ({ onSelectServer }) => {
 
   const handleServerUpdated = (updatedServer) => {
     refetchServers(); // Vuelve a obtener la lista de servidores
+    setNotification({ message: 'Servidor actualizado exitosamente.', type: 'success' });
   };
 
   const openEditModal = (server) => {
@@ -80,13 +82,24 @@ const ServerList = ({ onSelectServer }) => {
     return members && members.some(member => member.server === serverId && member.user === userId);
   };
 
+  const handleNextPage = () => {
+    if (nextPage) {
+      fetchServers(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (prevPage) {
+      fetchServers(currentPage - 1);
+    }
+  };
+
   if (loading) return <p>Cargando servidores...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) return <Notification message={error} type="danger" onClose={() => setNotification({ message: '', type: '' })} />;
 
   return (
     <div>
-      {/*<h1 className="title">Lista de Servidores</h1>*/}
-      <Notification message={notification.message} type={notification.type} />
+      <Notification message={notification.message} type={notification.type} onClose={() => setNotification({ message: '', type: '' })} />
       <button className="button is-primary" onClick={() => setIsCreateModalOpen(true)}>Crear Servidor</button>
       <ul>
         {Array.isArray(servers) && servers.length > 0 ? (
@@ -103,7 +116,7 @@ const ServerList = ({ onSelectServer }) => {
               )}
               {isMember(server.id) ? (
                 <>
-                  <button onClick={() => handleLeaveServer(server.id)} className="button is-danger">Abandonar</button>
+                  {/*<button onClick={() => handleLeaveServer(server.id)} className="button is-danger">Abandonar</button>*/}
                   <button onClick={() => onSelectServer(server.id)} className="button is-info">Ver Canales</button>
                 </>
               ) : (
@@ -115,6 +128,13 @@ const ServerList = ({ onSelectServer }) => {
           <li>No hay servidores disponibles.</li>
         )}
       </ul>
+
+      <div className="pagination-container">
+        <div className="pagination">
+          <button className="button" onClick={handlePrevPage} disabled={!prevPage}> Anterior </button>
+          <button className="button" onClick={handleNextPage} disabled={!nextPage}> Siguiente </button>
+        </div>
+      </div>
 
       <CreateServerModal 
         isOpen={isCreateModalOpen} 
